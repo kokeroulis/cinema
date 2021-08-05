@@ -22,6 +22,10 @@ class SearchFragment : Fragment(), SearchHandler {
     @Inject
     lateinit var searchAdapter: SearchAdapter
 
+    private val adapter by lazy {
+        ListAdapterDelegate(MultiSearchViewItemDiffCallback(), listOf(searchAdapter))
+    }
+
     private lateinit var binding: FragmentSearchBinding
     private val viewModel by viewModels<SearchViewModel>()
 
@@ -74,13 +78,13 @@ class SearchFragment : Fragment(), SearchHandler {
     private fun initSearchAdapter() {
         searchAdapter.setSearchHandler(this)
         binding.recyclerViewSearchItems.apply {
-            adapter = searchAdapter
+            adapter = this@SearchFragment.adapter
         }
     }
 
     private fun subscribeUi() {
         viewModel.searchResult.observe(viewLifecycleOwner) { searchResult ->
-            searchAdapter.submitList(searchResult)
+            adapter.submitList(searchResult.toViewItem())
         }
     }
 
