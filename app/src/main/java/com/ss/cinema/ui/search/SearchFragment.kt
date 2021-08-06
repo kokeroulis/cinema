@@ -8,6 +8,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import com.ss.cinema.databinding.FragmentSearchBinding
 import com.ss.cinema.util.mediatype.MediaType
 import dagger.hilt.android.AndroidEntryPoint
@@ -21,6 +22,13 @@ class SearchFragment : Fragment(), SearchHandler {
 
     @Inject
     lateinit var searchAdapter: SearchAdapter
+
+    @Inject
+    lateinit var categoryAdapter: CategoryAdapter
+
+    private val adapter by lazy {
+        ListAdapterDelegate(MultiSearchViewItemDiffCallback(), listOf(searchAdapter, categoryAdapter))
+    }
 
     private lateinit var binding: FragmentSearchBinding
     private val viewModel by viewModels<SearchViewModel>()
@@ -74,13 +82,13 @@ class SearchFragment : Fragment(), SearchHandler {
     private fun initSearchAdapter() {
         searchAdapter.setSearchHandler(this)
         binding.recyclerViewSearchItems.apply {
-            adapter = searchAdapter
+            adapter = this@SearchFragment.adapter
         }
     }
 
     private fun subscribeUi() {
         viewModel.searchResult.observe(viewLifecycleOwner) { searchResult ->
-            searchAdapter.submitList(searchResult)
+            adapter.submitList(searchResult.toViewItem())
         }
     }
 

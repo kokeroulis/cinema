@@ -2,21 +2,26 @@ package com.ss.cinema.ui.search
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.ss.cinema.R
 import com.ss.cinema.databinding.ListItemSearchBinding
 import com.ss.cinema.domain.model.MultiSearch
 import com.ss.cinema.domain.viewstate.SearchViewState
 import javax.inject.Inject
 
-class SearchAdapter @Inject constructor() :
-    ListAdapter<MultiSearch, SearchAdapter.MultiSearchViewHolder>(MultiSearchDiffCallback()) {
+class SearchAdapter @Inject constructor() : ListAdapterDelegate.DelegateAdapter<
+        MultiSearchViewItem.Item, SearchAdapter.MultiSearchViewHolder> {
 
     private lateinit var searchHandler: SearchHandler
 
     fun setSearchHandler(handler: SearchHandler) {
         searchHandler = handler
+    }
+
+    override val itemViewType: Int = R.layout.list_item_search
+
+    override fun isForViewType(item: Any, position: Int): Boolean {
+        return item is MultiSearchViewItem.Item
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MultiSearchViewHolder {
@@ -25,10 +30,12 @@ class SearchAdapter @Inject constructor() :
         return MultiSearchViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: MultiSearchViewHolder, position: Int) {
-        val item = getItem(position)
-        holder.bind(item, searchHandler)
+    override fun bind(
+        item: MultiSearchViewItem.Item, holder: MultiSearchViewHolder, position: Int
+    ) {
+        holder.bind(item.item, searchHandler)
     }
+
 
     class MultiSearchViewHolder(private val binding: ListItemSearchBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -38,17 +45,6 @@ class SearchAdapter @Inject constructor() :
                 handler = searchHandler
                 executePendingBindings()
             }
-        }
-    }
-
-    class MultiSearchDiffCallback : DiffUtil.ItemCallback<MultiSearch>() {
-
-        override fun areItemsTheSame(oldItem: MultiSearch, newItem: MultiSearch): Boolean {
-            return oldItem.id == newItem.id
-        }
-
-        override fun areContentsTheSame(oldItem: MultiSearch, newItem: MultiSearch): Boolean {
-            return oldItem == newItem
         }
     }
 }

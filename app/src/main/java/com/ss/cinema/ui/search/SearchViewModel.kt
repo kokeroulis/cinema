@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.ss.cinema.data.Resource
 import com.ss.cinema.data.map
 import com.ss.cinema.domain.model.MultiSearch
+import com.ss.cinema.domain.model.MultiSearchItem
 import com.ss.cinema.domain.usecase.FetchMultiSearchResultUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -16,8 +17,8 @@ class SearchViewModel @Inject constructor(
     private val fetchMultiSearchResultUseCase: FetchMultiSearchResultUseCase
 ) : ViewModel() {
 
-    private val _searchResult = MutableLiveData<List<MultiSearch>>()
-    val searchResult: LiveData<List<MultiSearch>>
+    private val _searchResult = MutableLiveData<List<MultiSearchItem>>()
+    val searchResult: LiveData<List<MultiSearchItem>>
         get() = _searchResult
 
     fun fetchMultiSearchResult(queryValue: String) {
